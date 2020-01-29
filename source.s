@@ -112,6 +112,34 @@ triinp:
 	B return
 
 trapinp:
+	LDR R0, =trapmsg
+	BL printf
+	SUB SP, #12
+	MOV R1, SP
+	ADD R1, #8
+	LDR R0, =perd
+	BL scanf
+	MOV R1, SP
+	ADD R1, #4
+	LDR R0, =perd
+	BL scanf
+	MOV R1, SP
+	LDR R0, =perd
+	BL scanf
+	LDR R0, [SP, #8]
+	PUSH { R0 }
+	LDR R0, [SP, #8]
+	PUSH { R0 }
+	LDR R0, [SP, #8]
+	PUSH { R0 }
+	BL calctrap
+	POP { R0 }
+	ADD SP, #24
+	MOV R1, R0
+	LDR R0, =areamsg
+	BL printf
+	B return
+
 rectinp:
 	LDR R0, =rectmsg
 	BL printf
@@ -197,6 +225,25 @@ calcrect:
 	MUL R4, R5
 	MOV R0, R4
 	POP { R4-R5 }
+	POP { FP }
+	POP { R1 }
+	PUSH { R0 }
+	MOV PC, R1
+
+calctrap:
+	PUSH { LR }
+	PUSH { FP }
+	MOV FP, SP
+	PUSH { R4-R6 }
+	LDR R4, [FP, #8]
+	LDR R5, [FP, #12]
+	LDR R6, [FP, #16]
+	MUL R5, R4
+	MUL R6, R4
+	ADD R5, R6
+	ASR R5, #1
+	MOV R0, R5
+	POP { R4-R6 }
 	POP { FP }
 	POP { R1 }
 	PUSH { R0 }
