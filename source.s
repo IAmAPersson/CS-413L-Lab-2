@@ -161,6 +161,8 @@ trapinp:
 	BL calctrap
 	POP { R0 }
 	ADD SP, #12
+	CMP R0, #0
+	BLT return
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -191,6 +193,8 @@ rectinp:
 	BL calcrect
 	POP { R0 }
 	ADD SP, #8
+	CMP R0, #0
+	BLT return
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -234,10 +238,10 @@ calctri:
 	MOV R6, #0
 	UMULL R7, R6, R4, R5
 	CMP R6, #0
-	BLGT overflow
-	MOVGT R0, #-1
+	MOVGT R7, #-1
 	ASRLE R7, #1
-	MOVLE R0, R7
+	BLGT overflow
+	MOV R0, R7
 	POP { R4-R7 }
 	POP { FP }
 	POP { R1 }
@@ -254,9 +258,9 @@ calcsqu:
 	MOV R6, #0
 	UMULL R7, R6, R4, R5
 	CMP R6, #0
+	MOVGT R7, #-1
 	BLGT overflow
-	MOVGT R0, #-1
-	MOVLE R0, R7
+	MOV R0, R7
 	POP { R4-R7 }
 	POP { FP }
 	POP { R1 }
@@ -267,12 +271,16 @@ calcrect:
 	PUSH { LR }
 	PUSH { FP }
 	MOV FP, SP
-	PUSH { R4-R5 }
+	PUSH { R4-R7 }
 	LDR R4, [FP, #8]
 	LDR R5, [FP, #12]
-	MUL R4, R5
-	MOV R0, R4
-	POP { R4-R5 }
+	MOV R6, #0
+	UMULL R7, R6, R4, R5
+	CMP R6, #0
+	MOVGT R7, #-1
+	BLGT overflow
+	MOV R0, R7
+	POP { R4-R7 }
 	POP { FP }
 	POP { R1 }
 	PUSH { R0 }
@@ -282,16 +290,33 @@ calctrap:
 	PUSH { LR }
 	PUSH { FP }
 	MOV FP, SP
-	PUSH { R4-R6 }
+	PUSH { R4-R8 }
 	LDR R4, [FP, #8]
 	LDR R5, [FP, #12]
 	LDR R6, [FP, #16]
-	MUL R5, R4
-	MUL R6, R4
-	ADD R5, R6
+	MOV R7, #0
+	UMULL R8, R7, R5, R4
+	MOV R5, R8
+	CMP R7, #0
+	BLGT overflow
+	CMP R7, #0
+	MOVGT R0, #-1
+	BGT trapskip
+	UMULL R8, R7, R6, R4
+	MOV R6, R8
+	CMP R7, #0
+	BLGT overflow
+	CMP R7, #0
+	MOVGT R0, #-1
+	BGT trapskip
+	ADDS R5, R6
+	MOVVS R0, #-1
+	BLVS overflow
+	BVS trapskip
 	ASR R5, #1
 	MOV R0, R5
-	POP { R4-R6 }
+trapskip:
+	POP { R4-R8 }
 	POP { FP }
 	POP { R1 }
 	PUSH { R0 }
