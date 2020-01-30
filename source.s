@@ -26,6 +26,8 @@ perd:
 	.asciz "%d"
 perdperc:
 	.asciz "%d%c"
+perc:
+	.asciz "%c"
 perdnl:
 	.asciz "%d\n"
 trimsg:
@@ -42,13 +44,16 @@ invstr:
 	.asciz "Invalid dimension. Please re-enter.\n"
 ofstr:
 	.asciz "Overflow\n"
+retrystr:
+	.asciz "Would you like to perform another calculation? (y/n)\n"
+quitstr:
+	.asciz "quit"
 
 .text
 .global main
 .global printf
 .global scanf
 .global strcmp
-.global stdin
 
 main:
 intro:
@@ -67,6 +72,10 @@ intro:
 	LDR R0, =nl
 	BL printf
 	LDR R0, =square
+	BL printf
+	LDR R0, =nl
+	BL printf
+	LDR R0, =quitstr
 	BL printf
 	LDR R0, =nl
 	BL printf
@@ -98,6 +107,11 @@ testinp:
 	BL strcmp
 	CMP R0, #0
 	BEQ squinp
+	MOV R0, SP
+	LDR R1, =quitstr
+	BL strcmp
+	CMP R0, #0
+	BEQ return
 	ADD SP, #100
 	B readinp
 
@@ -128,11 +142,11 @@ triinp:
 	POP { R0 }
 	ADD SP, #8
 	CMP R0, #0
-	BLT return
+	BLT tryagain
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
-	B return
+	B tryagain
 
 trapinp:
 	LDR R0, =trapmsg
@@ -171,11 +185,11 @@ trapinp:
 	POP { R0 }
 	ADD SP, #12
 	CMP R0, #0
-	BLT return
+	BLT tryagain
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
-	B return
+	B tryagain
 
 rectinp:
 	LDR R0, =rectmsg
@@ -204,11 +218,11 @@ rectinp:
 	POP { R0 }
 	ADD SP, #8
 	CMP R0, #0
-	BLT return
+	BLT tryagain
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
-	B return
+	B tryagain
 
 squinp:
 	LDR R0, =squmsg
@@ -227,11 +241,27 @@ squinp:
 	POP { R0 }
 	ADD SP, #4
 	CMP R0, #0
-	BLT return
+	BLT tryagain
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
-	B return
+	B tryagain
+
+tryagain:
+	LDR R0, =retrystr
+	BL printf
+	SUB SP, #4
+	MOV R0, #0
+	STR R0, [SP]
+	MOV R1, SP
+	LDR R0, =perc
+	BL scanf
+	LDR R0, [SP], #4
+	CMP R0, #'y'
+	BEQ intro
+	CMP R0, #'n'
+	BEQ return
+	B tryagain
 
 return:
 	MOV R7, #1
