@@ -99,13 +99,9 @@ triinp:
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
-	LDR R0, [SP, #4]
-	PUSH { R0 }
-	LDR R0, [SP, #4]
-	PUSH { R0 }
 	BL calctri
 	POP { R0 }
-	ADD SP, #16
+	ADD SP, #8
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -126,15 +122,9 @@ trapinp:
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
-	LDR R0, [SP, #8]
-	PUSH { R0 }
-	LDR R0, [SP, #8]
-	PUSH { R0 }
-	LDR R0, [SP, #8]
-	PUSH { R0 }
 	BL calctrap
 	POP { R0 }
-	ADD SP, #24
+	ADD SP, #12
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -151,13 +141,9 @@ rectinp:
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
-	LDR R0, [SP, #4]
-	PUSH { R0 }
-	LDR R0, [SP, #4]
-	PUSH { R0 }
 	BL calcrect
 	POP { R0 }
-	ADD SP, #16
+	ADD SP, #8
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -170,11 +156,9 @@ squinp:
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
-	LDR R0, [SP]
-	PUSH { R0 }
 	BL calcsqu
 	POP { R0 }
-	ADD SP, #8
+	ADD SP, #4
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
