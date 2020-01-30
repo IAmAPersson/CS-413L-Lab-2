@@ -354,14 +354,15 @@ inputd:
 	PUSH { FP }
 	MOV FP, SP
 	SUB SP, #4
-	MOV R2, FP
-	SUB R2, #4
+	MOV R2, #0
+	STR R2, [SP]
+	MOV R2, SP
 	LDR R1, [FP, #8]
 	LDR R0, =perdperc
 	BL scanf
 	CMP R0, #2
 	BNE inputdinvalid
-	LDR R0, [FP, #-4]
+	LDR R0, [SP]
 	CMP R0, #10
 	BNE inputdinvalid
 	B inputdret
