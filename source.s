@@ -33,10 +33,16 @@ trapmsg:
 	.asciz "Enter three values that represent 1) base one, 2) base two, and 3) height:\n"
 areamsg:
 	.asciz "Area: %d\n"
+invstr:
+	.asciz "Invalid dimension. Please re-enter.\n"
 
 .text
 .global main
 .global printf
+.global scanf
+.global strcmp
+.global stdin
+
 main:
 intro:
 	LDR R0, =welcstr
@@ -89,6 +95,9 @@ testinp:
 	B readinp
 
 triinp:
+	LDR R0, =stdin
+	LDR R0, [R0]
+	BL fflush
 	LDR R0, =trimsg
 	BL printf
 	SUB SP, #8
@@ -96,9 +105,17 @@ triinp:
 	ADD R1, #4
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP, #4]
+	CMP R0, #0
+	BLLE invalid
+	BLE triinp
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP]
+	CMP R0, #0
+	BLLE invalid
+	BLE triinp
 	BL calctri
 	POP { R0 }
 	ADD SP, #8
@@ -108,6 +125,9 @@ triinp:
 	B return
 
 trapinp:
+	LDR R0, =stdin
+	LDR R0, [R0]
+	BL fflush
 	LDR R0, =trapmsg
 	BL printf
 	SUB SP, #12
@@ -115,13 +135,25 @@ trapinp:
 	ADD R1, #8
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP, #8]
+	CMP R0, #0
+	BLLE invalid
+	BLE trapinp
 	MOV R1, SP
 	ADD R1, #4
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP, #4]
+	CMP R0, #0
+	BLLE invalid
+	BLE trapinp
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP]
+	CMP R0, #0
+	BLLE invalid
+	BLE trapinp
 	BL calctrap
 	POP { R0 }
 	ADD SP, #12
@@ -131,6 +163,9 @@ trapinp:
 	B return
 
 rectinp:
+	LDR R0, =stdin
+	LDR R0, [R0]
+	BL fflush
 	LDR R0, =rectmsg
 	BL printf
 	SUB SP, #8
@@ -138,9 +173,17 @@ rectinp:
 	ADD R1, #4
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP, #4]
+	CMP R0, #0
+	BLLE invalid
+	BLE rectinp
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP]
+	CMP R0, #0
+	BLLE invalid
+	BLE rectinp
 	BL calcrect
 	POP { R0 }
 	ADD SP, #8
@@ -150,12 +193,19 @@ rectinp:
 	B return
 
 squinp:
+	LDR R0, =stdin
+	LDR R0, [R0]
+	BL scanf
 	LDR R0, =squmsg
 	BL printf
 	SUB SP, #4
 	MOV R1, SP
 	LDR R0, =perd
 	BL scanf
+	LDR R0, [SP]
+	CMP R0, #0
+	BLLE invalid
+	BLE squinp
 	BL calcsqu
 	POP { R0 }
 	ADD SP, #4
@@ -232,3 +282,12 @@ calctrap:
 	POP { R1 }
 	PUSH { R0 }
 	MOV PC, R1
+
+invalid:
+	PUSH { LR }
+	PUSH { FP }
+	MOV FP, SP
+	LDR R0, =invstr
+	BL printf
+	POP { FP }
+	POP { PC }
