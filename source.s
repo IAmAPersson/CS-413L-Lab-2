@@ -3,6 +3,9 @@
 @ 1/29/2020
 @ This software gets dimensions and a shape, and calculates the area.
 
+@ The ARM C calling convention is not followed due to program requirements.
+@ Hence, a modified x86 C calling convention is used to accomodate LR
+
 .data
 .balign 4
 welcstr:
@@ -21,6 +24,8 @@ pers:
 	.asciz "%s"
 perd:
 	.asciz "%d"
+perdperc:
+	.asciz "%d%c"
 perdnl:
 	.asciz "%d\n"
 trimsg:
@@ -97,26 +102,27 @@ testinp:
 	B readinp
 
 triinp:
-	LDR R0, =stdin
-	LDR R0, [R0]
-	BL fflush
 	LDR R0, =trimsg
 	BL printf
 	SUB SP, #8
 	MOV R1, SP
 	ADD R1, #4
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP, #4]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #8
 	BLE triinp
 	MOV R1, SP
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #8
 	BLE triinp
 	BL calctri
 	POP { R0 }
@@ -129,34 +135,37 @@ triinp:
 	B return
 
 trapinp:
-	LDR R0, =stdin
-	LDR R0, [R0]
-	BL fflush
 	LDR R0, =trapmsg
 	BL printf
 	SUB SP, #12
 	MOV R1, SP
 	ADD R1, #8
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP, #8]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #12
 	BLE trapinp
 	MOV R1, SP
 	ADD R1, #4
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP, #4]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #12
 	BLE trapinp
 	MOV R1, SP
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #12
 	BLE trapinp
 	BL calctrap
 	POP { R0 }
@@ -169,26 +178,27 @@ trapinp:
 	B return
 
 rectinp:
-	LDR R0, =stdin
-	LDR R0, [R0]
-	BL fflush
 	LDR R0, =rectmsg
 	BL printf
 	SUB SP, #8
 	MOV R1, SP
 	ADD R1, #4
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP, #4]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #8
 	BLE rectinp
 	MOV R1, SP
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #8
 	BLE rectinp
 	BL calcrect
 	POP { R0 }
@@ -201,18 +211,17 @@ rectinp:
 	B return
 
 squinp:
-	LDR R0, =stdin
-	LDR R0, [R0]
-	BL scanf
 	LDR R0, =squmsg
 	BL printf
 	SUB SP, #4
 	MOV R1, SP
-	LDR R0, =perd
-	BL scanf
+	PUSH { R1 }
+	BL inputd
+	ADD SP, #4
 	LDR R0, [SP]
 	CMP R0, #0
 	BLLE invalid
+	ADDLE SP, #4
 	BLE squinp
 	BL calcsqu
 	POP { R0 }
@@ -337,5 +346,35 @@ overflow:
 	MOV FP, SP
 	LDR R0, =ofstr
 	BL printf
+	POP { FP }
+	POP { PC }
+
+inputd:
+	PUSH { LR }
+	PUSH { FP }
+	MOV FP, SP
+	SUB SP, #4
+	MOV R2, FP
+	SUB R2, #4
+	LDR R1, [FP, #8]
+	LDR R0, =perdperc
+	BL scanf
+	CMP R0, #2
+	BNE inputdinvalid
+	LDR R0, [FP, #-4]
+	CMP R0, #10
+	BNE inputdinvalid
+	B inputdret
+inputdinvalid:
+	LDR R1, [FP, #8]
+	MOV R0, #-1
+	STR R0, [R1]
+	SUB SP, #100
+	LDR R0, =pers
+	MOV R1, SP
+	BL scanf
+	ADD SP, #100
+inputdret:
+	ADD SP, #4
 	POP { FP }
 	POP { PC }
