@@ -32,9 +32,11 @@ rectmsg:
 trapmsg:
 	.asciz "Enter three values that represent 1) base one, 2) base two, and 3) height:\n"
 areamsg:
-	.asciz "Area: %d\n"
+	.asciz "Area: %u\n"
 invstr:
 	.asciz "Invalid dimension. Please re-enter.\n"
+ofstr:
+	.asciz "Overflow\n"
 
 .text
 .global main
@@ -119,6 +121,8 @@ triinp:
 	BL calctri
 	POP { R0 }
 	ADD SP, #8
+	CMP R0, #0
+	BLT return
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -209,6 +213,8 @@ squinp:
 	BL calcsqu
 	POP { R0 }
 	ADD SP, #4
+	CMP R0, #0
+	BLT return
 	MOV R1, R0
 	LDR R0, =areamsg
 	BL printf
@@ -222,13 +228,17 @@ calctri:
 	PUSH { LR }
 	PUSH { FP }
 	MOV FP, SP
-	PUSH { R4-R5 }
+	PUSH { R4-R7 }
 	LDR R4, [FP, #8]
 	LDR R5, [FP, #12]
-	MUL R4, R5
-	ASR R4, #1
-	MOV R0, R4
-	POP { R4-R5 }
+	MOV R6, #0
+	UMULL R7, R6, R4, R5
+	CMP R6, #0
+	BLGT overflow
+	MOVGT R0, #-1
+	ASRLE R7, #1
+	MOVLE R0, R7
+	POP { R4-R7 }
 	POP { FP }
 	POP { R1 }
 	PUSH { R0 }
@@ -238,12 +248,16 @@ calcsqu:
 	PUSH { LR }
 	PUSH { FP }
 	MOV FP, SP
-	PUSH { R4-R5 }
+	PUSH { R4-R7 }
 	LDR R4, [FP, #8]
 	MOV R5, R4
-	MUL R4, R5
-	MOV R0, R4
-	POP { R4-R5 }
+	MOV R6, #0
+	UMULL R7, R6, R4, R5
+	CMP R6, #0
+	BLGT overflow
+	MOVGT R0, #-1
+	MOVLE R0, R7
+	POP { R4-R7 }
 	POP { FP }
 	POP { R1 }
 	PUSH { R0 }
@@ -288,6 +302,15 @@ invalid:
 	PUSH { FP }
 	MOV FP, SP
 	LDR R0, =invstr
+	BL printf
+	POP { FP }
+	POP { PC }
+
+overflow:
+	PUSH { LR }
+	PUSH { FP }
+	MOV FP, SP
+	LDR R0, =ofstr
 	BL printf
 	POP { FP }
 	POP { PC }
