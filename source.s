@@ -408,3 +408,127 @@ inputdret:
 	ADD SP, #4 @restore stack space
 	POP { FP } @restore stack frame
 	POP { PC } @return
+
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@whatever
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@triangle
+@Enter two values that represent 1) width and 2) height:
+@a
+@Invalid dimension. Please re-enter.
+@Enter two values that represent 1) width and 2) height:
+@-6
+@Invalid dimension. Please re-enter.
+@Enter two values that represent 1) width and 2) height:
+@0
+@Invalid dimension. Please re-enter.
+@Enter two values that represent 1) width and 2) height:
+@6.9
+@Invalid dimension. Please re-enter.
+@Enter two values that represent 1) width and 2) height:
+@10
+@50
+@Area: 250
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@rectangle
+@Enter two values that represent 1) width and 2) height:
+@10
+@50
+@Area: 500
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@trapezoid
+@Enter three values that represent 1) base one, 2) base two, and 3) height:
+@10
+@25
+@50
+@Area: 875
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@square
+@Enter a value that represents 1) side length:
+@50
+@Area: 2500
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@triangle
+@Enter two values that represent 1) width and 2) height:
+@120000
+@670000
+@Overflow
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@rectangle
+@Enter two values that represent 1) width and 2) height:
+@670000
+@680000
+@Overflow
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@trapezoid
+@Enter three values that represent 1) base one, 2) base two, and 3) height:
+@670000
+@670000
+@670000
+@Overflow
+@Would you like to perform another calculation? (y/n)
+@y
+@Hello! Enter a shape from the following menu and I will calculate its area!
+@triangle
+@rectangle
+@trapezoid
+@square
+@quit
+@square
+@Enter a value that represents 1) side length:
+@67000
+@Overflow
+@Would you like to perform another calculation? (y/n)
+@n
