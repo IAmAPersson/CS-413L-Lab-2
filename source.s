@@ -113,7 +113,7 @@ testinp: @loop: loops until a valid input is given
 	CMP R0, #0
 	BEQ return @quit if same
 	ADD SP, #100 @did not equal anything, restore stack space
-	B readinp @try again
+	B intro @try again
 
 triinp: @loop: loop until two valid inputs are given
 	LDR R0, =trimsg
